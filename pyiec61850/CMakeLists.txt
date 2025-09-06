@@ -13,16 +13,14 @@ find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
 include_directories(${Python_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+link_directories(${Python_LIBRARY_DIRS})
 
 set(CMAKE_SWIG_FLAGS "")
+set(BUILD_PYTHON_BINDINGS ON)
 set_property(SOURCE iec61850.i PROPERTY CPLUSPLUS ON)
 set_property(SOURCE iec61850.i PROPERTY SWIG_MODULE_NAME pyiec61850)
 
-if(WIN32)
-    set(LIBS iec61850 ws2_32)
-else()
-    set(LIBS iec61850-shared)
-endif()
+set(LIBS iec61850-shared)
 
 swig_add_library(pyiec61850
     LANGUAGE python
@@ -30,6 +28,15 @@ swig_add_library(pyiec61850
 )
 
 swig_link_libraries(pyiec61850 ${LIBS})
+
+if(HEADER_PATH_HINT)
+set_property(TARGET pyiec61850 PROPERTY SWIG_INCLUDE_DIRECTORIES ${HEADER_PATH_HINT})
+target_include_directories(pyiec61850 PRIVATE ${HEADER_PATH_HINT})
+endif()
+
+if(LINK_PATH_HINT)
+target_link_directories(pyiec61850 PRIVATE ${LINK_PATH_HINT})
+endif()
 
 # Finding python modules install path
 execute_process(

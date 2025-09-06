@@ -854,7 +854,7 @@ IedServer_setConnectionIndicationHandler(IedServer self, IedConnectionIndication
  * \param self the instance of IedServer to configure.
  * \param enable when true all requests from clients will be ignored
  */
-void
+LIB61850_API void
 IedServer_ignoreClientRequests(IedServer self, bool enable);
 
 /**@}*/

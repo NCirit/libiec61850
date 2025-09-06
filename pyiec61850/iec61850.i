@@ -61,11 +61,21 @@ DataObject* toDataObject(ModelNode *);
 char* toCharP(void *);
 
 /* Goose Subscriber section */
+%ignore IGooseListener::listenerCallback;
+%ignore GooseSubscriber_setListener(GooseSubscriber, GooseListener, void*);
+
 %{
 struct sGooseSubscriber;
 typedef struct sGooseSubscriber* GooseSubscriber;
 #include "goose_subscriber.h"
 #include "goose_receiver.h"
+#include "eventHandlers/IGooseListener.hpp"
+
+void GooseSubscriber_setListener(GooseSubscriber subc, IGooseListener *listener)
+{
+    GooseSubscriber_setListener(subc, IGooseListener::listenerCallback, 
+        reinterpret_cast<void*>(listener));
+}
 
 void GooseSubscriber_setDstMac(GooseSubscriber subscriber,
                                uint8_t dst_mac_0,
@@ -105,6 +115,7 @@ void GooseSubscriber_setDstMac(GooseSubscriber subscriber,
 %feature("director") CheckHandlerForPython;
 %feature("director") WaitForExecutionHandlerForPython;
 %feature("director") ControlHandlerForPython;
+%feature("director") IGooseListener;
 %{
 #include "eventHandlers/eventHandler.hpp"
 #include "eventHandlers/reportControlBlockHandler.hpp"
@@ -119,6 +130,9 @@ std::map< std::string, EventSubscriber*> EventSubscriber::m_subscriber_map = {};
 %include "eventHandlers/gooseHandler.hpp"
 %include "eventHandlers/commandTermHandler.hpp"
 %include "eventHandlers/controlActionHandler.hpp"
+%include "eventHandlers/IGooseListener.hpp"
+
+void GooseSubscriber_setListener(GooseSubscriber subc, IGooseListener *listener);
 
 /* Goose Publisher section */
 %{

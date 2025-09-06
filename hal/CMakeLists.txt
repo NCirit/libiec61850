@@ -215,10 +215,18 @@ IF (MSVC)
 ENDIF()
 
 iF(WITH_WPCAP)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 target_link_libraries(hal
-	${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/wpcap.lib
-	${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/packet.lib
+${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/x64/wpcap.lib
+${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/x64/packet.lib
 )
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+target_link_libraries(hal
+${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/wpcap.lib
+${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/packet.lib
+)
+endif()
+
 ENDIF(WITH_WPCAP)
 
 set(BINDIR "bin")

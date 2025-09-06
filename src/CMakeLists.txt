@@ -332,8 +332,13 @@ endif( WIN32 )
 
 add_library (iec61850-shared SHARED ${library_SRCS} )
 
+if(NOT MSVC)
+# causes name collistion with static library
 set_target_properties(iec61850-shared PROPERTIES
-           OUTPUT_NAME iec61850
+           OUTPUT_NAME iec61850)
+ENDIF()
+
+set_target_properties(iec61850-shared PROPERTIES
            SOVERSION "${LIB_VERSION_MAJOR}.${LIB_VERSION_MINOR}.${LIB_VERSION_PATCH}"
 )
 
@@ -376,14 +381,28 @@ IF(MINGW)
 ENDIF(MINGW)
 
 iF(WITH_WPCAP)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 target_link_libraries(iec61850
-   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/lib/wpcap.lib
-   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/lib/packet.lib
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/x64/wpcap.lib
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/x64/packet.lib
 )
 target_link_libraries(iec61850-shared
-   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/lib/wpcap.lib
-   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/lib/packet.lib
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/x64/wpcap.lib
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/x64/packet.lib
 )
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+target_link_libraries(iec61850
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/wpcap.lib
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/packet.lib
+)
+target_link_libraries(iec61850-shared
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/wpcap.lib
+   ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/winpcap/Lib/packet.lib
+)
+endif()
+
+
+
 
 ENDIF(WITH_WPCAP)
 find_package(Doxygen)
